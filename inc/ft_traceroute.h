@@ -107,7 +107,7 @@ void            error(uint8_t code, int err, char *err_format, ...);
 void            resolve_ipv4_addr(struct in_addr byte_address);
 void            get_dest_addr(char *host_name);
 
-void            get_ping_opt(int argc, char **argv);
+void            get_traceroute_opt(int argc, char **argv);
 
 
 

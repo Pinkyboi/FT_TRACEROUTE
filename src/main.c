@@ -15,7 +15,7 @@ t_traceroute g_traceroute = {
 
 int main(int argc, char **argv)
 {
-    get_ping_opt(argc, argv);
+    get_traceroute_opt(argc, argv);
     get_dest_addr(g_traceroute.dest.name);
     resolve_ipv4_addr(g_traceroute.dest.bytes_addr);
     if (!strcmp(g_traceroute.dest.name, g_traceroute.last_resolved_addr.num_addr))

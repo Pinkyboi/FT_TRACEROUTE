@@ -46,7 +46,7 @@ static void tracerout_usage(void)
     exit(2);
 }
 
-void get_ping_opt(int argc, char **argv)
+void get_traceroute_opt(int argc, char **argv)
 {
     char    opt;
     float   secs;
