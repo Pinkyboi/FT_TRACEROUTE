@@ -20,6 +20,9 @@ SRC_FILES = main.c\
 			time.c\
 			error.c\
 			address.c\
+			send.c\
+			recv.c\
+			ntools.c
 
 OBJ_FILES = $(SRC_FILES:.c=.o)
 HDR = $(addprefix $(INC_PATH)/,$(HDR_FILES))

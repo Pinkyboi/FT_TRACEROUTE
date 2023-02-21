@@ -52,12 +52,12 @@ void get_ping_opt(int argc, char **argv)
     float   secs;
     int64_t datalen;
 
-    while((opt = getopt(argc, argv, "hn:z:q:N:f:m:N")) != EOF)
+    while((opt = getopt(argc, argv, "hn" "z:q:N:f:m:N:")) != EOF)
     {
         switch (opt)
         {
             case 'n':
-                g_tracerout.probe_info.resolve_addr = false;
+                g_traceroute.probe_info.resolve_addr = false;
                 break;
             /// add treatment for diffrent options
             default:
@@ -71,6 +71,15 @@ void get_ping_opt(int argc, char **argv)
         tracerout_usage();
     else
     {
-        g_tracerout.dest.name = argv[argc - 1];
+        g_traceroute.dest.name = argv[argc - 1];
+        if (argc > 1)
+        {
+            datalen = ft_atoi(argv[argc - 2]);
+            if (datalen < 0)
+                error(2, 0, "invalid datalen : `%d'", argv[argc - 2])
+            if (datalen > MAX_DATA_LEN)
+                datalen = MAX_DATA_LEN;
+            g_traceroute.probe_info.packet_len = datalen;
+        }
     }
 }

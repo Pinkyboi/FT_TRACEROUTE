@@ -10,13 +10,13 @@ void resolve_ipv4_addr(struct in_addr byte_address)
     };
 
     inet_ntop(host_sa.sin_family, &host_sa.sin_addr,
-                    g_tracerout.last_resolved_addr.num_addr,
-                    sizeof(g_tracerout.last_resolved_addr.num_addr));
-    if (g_tracerout.probe_info.resolve_addr)
+                    g_traceroute.last_resolved_addr.num_addr,
+                    sizeof(g_traceroute.last_resolved_addr.num_addr));
+    if (g_traceroute.probe_info.resolve_addr)
     {
         getnameinfo((struct sockaddr *)&host_sa, sizeof(host_sa),
-                        g_tracerout.last_resolved_addr.full_addr,
-                        sizeof(g_tracerout.last_resolved_addr.full_addr),
+                        g_traceroute.last_resolved_addr.full_addr,
+                        sizeof(g_traceroute.last_resolved_addr.full_addr),
                         NULL, 0, 0);
     }
 }
@@ -45,9 +45,9 @@ void get_dest_addr(char *host_name)
     }
     if (result_ptr)
     {
-        g_tracerout.dest.addr_info   = *result_ptr;
-        g_tracerout.dest.sock_addr   = *result_ptr->ai_addr;
-        g_tracerout.dest.bytes_addr  = ((struct sockaddr_in *)result_ptr->ai_addr)->sin_addr;
+        g_traceroute.dest.addr_info   = *result_ptr;
+        g_traceroute.dest.sock_addr   = *result_ptr->ai_addr;
+        g_traceroute.dest.bytes_addr  = ((struct sockaddr_in *)result_ptr->ai_addr)->sin_addr;
     }
     freeaddrinfo(server_result);
 }
