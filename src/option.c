@@ -76,7 +76,7 @@ void get_traceroute_opt(int argc, char **argv)
         {
             datalen = ft_atoi(argv[argc - 2]);
             if (datalen < 0)
-                error(2, 0, "invalid datalen : `%d'", argv[argc - 2])
+                error(2, 0, "invalid datalen : `%d'", argv[argc - 2]);
             if (datalen > MAX_DATA_LEN)
                 datalen = MAX_DATA_LEN;
             g_traceroute.probe_info.packet_len = datalen;
