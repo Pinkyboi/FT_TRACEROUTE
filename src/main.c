@@ -4,7 +4,7 @@ t_traceroute g_traceroute = {
     
     .probe_info = {
         .min_ttl = 1,
-        .max_ttl = DEFAULT_MAX_TTL,
+        .max_ttl = DEFAULT_MAX_HOP,
         .packet_len = DEFAULT_PACKETLEN,
         .wait_time = DEFAULT_WAIT_TIME,
         .max_prob_sent = DEFAULT_MAX_PROB_SENT,

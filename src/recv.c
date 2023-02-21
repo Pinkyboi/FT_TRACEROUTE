@@ -19,7 +19,7 @@ static t_msg_data create_message_header(void* message_buffer, int message_len,
 
 void read_response(void)
 {
-    static char                 control_buffer[C_MAXPACKET];
+    static char                 control_buffer[MAX_C_BUFF_LEN];
     struct icmphdr              icmp_hdr;
     t_msg_data                  err_msg;
     t_cmsg_info                 cmsg_info;

@@ -1,55 +1,24 @@
 #include "ft_traceroute.h"
 
-static int64_t strtol_or_err(char *arg, char *err_msg, long min_value, long max_value)
-{
-    long num_arg;
-    char *end_ptr = NULL;
-
-    errno = 0;
-    if (arg == NULL || *arg == '\0')
-        error(2, 0, err_msg);
-    num_arg = strtol(arg, &end_ptr, 10);
-    if (errno || arg == end_ptr || (end_ptr && *end_ptr))
-        error(2, errno, err_msg, arg);
-    if (num_arg < min_value || num_arg > max_value)
-        error(2, 0, ERR_RANGE_ARG_MSG, arg, min_value, max_value);
-    return (num_arg);
-}
-
 static void tracerout_usage(void)
 {
-    printf("Usage:\n");
-    printf("  traceroute [ -n ] [ -f first_ttl ] [ -i device ] [ -m max_ttl ]");
-    printf(" [ -N squeries ] [ -q nqueries ] [ -z sendwait ] host [ packetlen ]\n");
-    printf("Options:\n");
-    printf(" -f first_ttl");
-    printf("\t\tStart from the first_ttl hop (instead from 1)\n");
-    printf(" -m max_ttl");
-    printf("\t\tSet the max number of hops (max TTL to be\n");
-    printf("\t\t\treached). Default is 30\n");
-    printf(" -N squeries");
-    printf("\t\tSet the number of probes to be tried\n");
-    printf("\t\t\tsimultaneously (default is 16)\n");
-    printf(" -n");
-    printf("\t\t\tDo not resolve IP addresses to their domain names\n");
-    printf(" -q nqueries");
-    printf("\t\tSet the number of probes per each hop. Default is 3\n");
-    printf(" --help");
-    printf("\t\t\tRead this help and exit\n");
-    printf("Arguments:\n");
-    printf("+\thost");
-    printf("\t\tThe host to traceroute to\n");
-    printf("\tpacketlen");
-    printf("\tThe full packet length (default is the length of an IP\n");
-    printf("\t\t\theader plus 40). Can be ignored or increased to a minimal\n");
-    printf("\t\t\tallowed value\n");
+    printf("Usage: ft_traceroute [OPTION...] HOST\n");
+    printf("Print the route packets trace to network host.\n\n");
+    printf(" -n, \tdon't resolve hostnames\n");
+    printf(" -m, \tset maximal hop count (default: 64)\n");
+    printf(" -q, \tsend NUM probe packets per hop (default: 3)\n");
+    printf(" -w, \twait NUM seconds for response (default: 3)\n");
+    printf("Manadatory or optional arguments to long options are also mandatory or optional\n");
+    printf("for any corresponding short options.\n");
     exit(2);
 }
 
 void get_traceroute_opt(int argc, char **argv)
 {
     char    opt;
-    float   secs;
+    float   time;
+    int64_t max_prob;
+    int64_t max_hop;
     int64_t datalen;
 
     while((opt = getopt(argc, argv, "hn" "z:q:N:f:m:N:")) != EOF)
@@ -59,7 +28,24 @@ void get_traceroute_opt(int argc, char **argv)
             case 'n':
                 g_traceroute.probe_info.resolve_addr = false;
                 break;
-            /// add treatment for diffrent options
+            case 'm':
+                max_hop = ft_atoi(optarg);
+                if (max_hop < MIN_TTL || max_hop > MAX_TTL)
+                    error(2, 0, ERR_INVALID_MAX_TTL, optarg);
+                g_traceroute.probe_info.max_ttl = max_hop;
+                break;
+            case 'q':
+                max_prob = ft_atoi(optarg);
+                if (max_prob < MIN_PROBE_NBR || max_prob > MAX_PROBE_NBR)
+                    error(2, 0, ERR_INVALID_MAX_PROB, MIN_PROBE_NBR, MAX_PROBE_NBR);
+                g_traceroute.probe_info.max_prob_sent = max_prob;
+                break;
+            case 'w':
+                time = ft_atoi(optarg);
+                if (time < MIN_WAIT_TIME || time > MAX_WAIT_TIME)
+                    error(2, 0, ERR_INVALID_WAIT, optarg);
+                g_traceroute.probe_info.wait_time = secs_to_timeval(time);
+                break;
             default:
                 tracerout_usage();
             continue;
@@ -76,7 +62,7 @@ void get_traceroute_opt(int argc, char **argv)
         {
             datalen = ft_atoi(argv[argc - 2]);
             if (datalen < 0)
-                error(2, 0, "invalid datalen : `%d'", argv[argc - 2])
+                error(2, 0, "invalid datalen : `%d'", argv[argc - 2]);
             if (datalen > MAX_DATA_LEN)
                 datalen = MAX_DATA_LEN;
             g_traceroute.probe_info.packet_len = datalen;

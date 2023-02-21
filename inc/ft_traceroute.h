@@ -20,23 +20,35 @@
 #include <linux/errqueue.h>
 
 
+#define MAX_C_BUFF_LEN 10240
+#define MAX_ADDR_LEN 255
 #define IP_HDR_SIZE 20
-
-#define C_MAXPACKET 10240
-
-#define ADDR_MAX_LEN 255
+#define MAX_DATA_LEN IP_MAXPACKET - IP_HDR_SIZE - ICMP_MINLEN
 
 #define DEFAULT_PACKETLEN 40
-#define DEFAULT_MAX_TTL 30
-#define DEFAULT_WAIT_TIME 5
-#define DEFAULT_MAX_PROB_SENT 16
+#define DEFAULT_MAX_HOP 64
+#define DEFAULT_WAIT_TIME 3
+#define DEFAULT_MAX_PROB_SENT 3
 
-#define MAX_DATA_LEN IP_MAXPACKET - IP_HDR_SIZE - ICMP_MINLEN
 
 #define ERR_RANGE_ARG_MSG   "invalid argument: '%s': out of range: %ld <= value <= %ld"
 #define PROGNAME "ft_tracerout" 
 
 #define PACKET_SIZE ICMP_MINLEN + g_traceroute.probe_info.packet_len
+
+#define ERR_INVALID_WAIT "ridiculous waiting time `%d'"
+#define ERR_INVALID_MAX_TTL "invalid hop value `%d'"
+#define ERR_INVALID_MAX_PROB "number of tries should be between %d and %d'"
+
+#define MIN_PROBE_NBR 1
+#define MAX_PROBE_NBR 10
+
+#define MIN_TTL 1
+#define MAX_TTL MAXTTL
+
+#define MIN_WAIT_TIME 1
+#define MAX_WAIT_TIME 60
+
 
 
 typedef enum bool{
@@ -68,16 +80,16 @@ typedef struct                  s_dest_info
 
 typedef struct                  s_resolved_addr
 {
-    char                        full_addr[ADDR_MAX_LEN];
+    char                        full_addr[MAX_ADDR_LEN];
     char                        num_addr[INET_ADDRSTRLEN];
 }                               t_resolved_addr;
 
 typedef struct                  s_probe_info
 {
+    struct timeval              wait_time;
     uint8_t                     min_ttl;
     uint8_t                     max_ttl;
     uint16_t                    packet_len;
-    uint32_t                    wait_time;
     uint32_t                    max_prob_sent;
     bool                        resolve_addr;
     bool                        timestamp;
