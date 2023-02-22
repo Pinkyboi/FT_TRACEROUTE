@@ -6,6 +6,7 @@ static void tracerout_usage(void)
     printf("Print the route packets trace to network host.\n\n");
     printf(" -n, \tdon't resolve hostnames\n");
     printf(" -m, \tset maximal hop count (default: %d)\n", DEFAULT_MAX_HOP);
+    printf(" -M, \tset minimal hop count (default: %d)\n", DEFAULT_MIN_HOP);
     printf(" -q, \tsend NUM probe packets per hop (default: %d)\n", DEFAULT_MAX_PROB_SENT);
     printf(" -w, \twait NUM seconds for response (default: %d)\n", DEFAULT_WAIT_TIME);
     printf("\nArguments:\n");
@@ -22,9 +23,10 @@ void get_traceroute_opt(int argc, char **argv)
     float   time;
     int64_t max_prob;
     int64_t max_hop;
+    int64_t min_hop;
     int64_t datalen;
 
-    while((opt = getopt(argc, argv, "hn" "z:q:N:f:m:N:")) != EOF)
+    while((opt = getopt(argc, argv, "hn" "w:q:m:M:")) != EOF)
     {
         switch (opt)
         {
@@ -36,6 +38,12 @@ void get_traceroute_opt(int argc, char **argv)
                 if (max_hop < MIN_TTL || max_hop > MAX_TTL)
                     error(2, 0, ERR_INVALID_MAX_TTL, optarg);
                 g_traceroute.specs.max_ttl = max_hop;
+                break;
+            case 'M':
+                min_hop = ft_atoi(optarg);
+                if (min_hop < MIN_TTL || min_hop > MAX_TTL)
+                    error(2, 0, ERR_INVALID_MIN_TTL, optarg);
+                g_traceroute.specs.min_ttl = min_hop;
                 break;
             case 'q':
                 max_prob = ft_atoi(optarg);
@@ -54,6 +62,8 @@ void get_traceroute_opt(int argc, char **argv)
             continue;
         }
     }
+    if (g_traceroute.specs.max_ttl < g_traceroute.specs.min_ttl)
+        error(2, 0, ERR_INVALID_MIN_MAX_TTL, g_traceroute.specs.min_ttl, g_traceroute.specs.max_ttl);
 	argc -= optind;
 	argv += optind;
     if (!argc)

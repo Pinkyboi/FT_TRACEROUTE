@@ -26,6 +26,7 @@
 
 #define DEFAULT_PACKETLEN 60
 #define DEFAULT_MAX_HOP 30
+#define DEFAULT_MIN_HOP 1
 #define DEFAULT_WAIT_TIME 3
 #define DEFAULT_MAX_PROB_SENT 3
 
@@ -36,7 +37,9 @@
 #define PACKET_SIZE g_traceroute.specs.packet_len
 
 #define ERR_INVALID_WAIT "ridiculous waiting time `%d'"
-#define ERR_INVALID_MAX_TTL "invalid hop value `%d'"
+#define ERR_INVALID_MAX_TTL "invalid max hop value `%d'"
+#define ERR_INVALID_MIN_TTL "invalid min hop value `%d'"
+#define ERR_INVALID_MIN_MAX_TTL "invalid min hop value `%d' greater than max hop value `%d'"
 #define ERR_INVALID_MAX_PROB "number of tries should be between %d and %d'"
 
 #define MIN_PROBE_NBR 1
