@@ -1,24 +1,28 @@
 #include "ft_traceroute.h"
 
-void resolve_ipv4_addr(struct in_addr byte_address)
+t_resolved_addr resolve_ipv4_addr(struct in_addr byte_address)
 {
     struct sockaddr_in host_sa;
+    t_resolved_addr    resolved_addr;
 
+    resolved_addr = (t_resolved_addr){0};
+    resolved_addr.byte_addr = byte_address.s_addr;
     host_sa = (struct sockaddr_in){
         .sin_addr = byte_address,
         .sin_family = AF_INET,
     };
 
     inet_ntop(host_sa.sin_family, &host_sa.sin_addr,
-                    g_traceroute.last_resolved_addr.num_addr,
-                    sizeof(g_traceroute.last_resolved_addr.num_addr));
-    if (g_traceroute.probe_info.resolve_addr)
+                    resolved_addr.num_addr,
+                    sizeof(resolved_addr.num_addr));
+    if (g_traceroute.specs.resolve_addr)
     {
         getnameinfo((struct sockaddr *)&host_sa, sizeof(host_sa),
-                        g_traceroute.last_resolved_addr.full_addr,
-                        sizeof(g_traceroute.last_resolved_addr.full_addr),
+                        resolved_addr.full_addr,
+                        sizeof(resolved_addr.full_addr),
                         NULL, 0, 0);
     }
+    return (resolved_addr);
 }
 
 void get_dest_addr(char *host_name)

@@ -17,34 +17,57 @@ static t_msg_data create_message_header(void* message_buffer, int message_len,
     return msg;
 }
 
-void read_response(void)
+void print_trace_info(struct iphdr *ip_hdr, struct icmphdr *icmp_hdr)
 {
-    static char                 control_buffer[MAX_C_BUFF_LEN];
-    struct icmphdr              icmp_hdr;
-    t_msg_data                  err_msg;
-    t_cmsg_info                 cmsg_info;
-
-    err_msg = create_message_header(&icmp_hdr, sizeof(icmp_hdr),
-        control_buffer, sizeof(control_buffer));
-    if (recvmsg(g_traceroute.sockfd, &err_msg.msg_hdr, MSG_ERRQUEUE | MSG_DONTWAIT) > 0)
+    if (ip_hdr->saddr != g_traceroute.last_resolved_addr.byte_addr)
     {
-        cmsg_info = (t_cmsg_info){.cmsg = CMSG_FIRSTHDR(&err_msg.msg_hdr)};
-        while (cmsg_info.cmsg)
-        {
-            if (cmsg_info.cmsg->cmsg_level == IPPROTO_IP &&
-                    cmsg_info.cmsg->cmsg_type == IP_RECVERR)
-                cmsg_info.error_ptr = (struct sock_extended_err *)CMSG_DATA(cmsg_info.cmsg);
-            cmsg_info.cmsg = CMSG_NXTHDR(&err_msg.msg_hdr, cmsg_info.cmsg);
-        }
-        if (cmsg_info.error_ptr)
-        {
-            if (cmsg_info.error_ptr->ee_origin == SO_EE_ORIGIN_ICMP)
-            {
-                if (cmsg_info.error_ptr->ee_type == ICMP_TIME_EXCEEDED)
-                    printf("Time exceeded\n");
-                else if (cmsg_info.error_ptr->ee_type == ICMP_DEST_UNREACH)
-                    printf("Destination unreachable\n");
-            }
-        }
+        g_traceroute.last_resolved_addr = resolve_ipv4_addr((struct in_addr){ip_hdr->saddr});
+        if (g_traceroute.specs.resolve_addr)
+            printf("%s (%s)",   g_traceroute.last_resolved_addr.full_addr,
+                                g_traceroute.last_resolved_addr.num_addr );
+        else
+            printf("%s", g_traceroute.last_resolved_addr.num_addr);
     }
+    printf("  %.3f ms", usec_time_diff( g_traceroute.send_infos.s_time,
+                                        g_traceroute.send_infos.r_time ));
+}
+
+void parse_packet(char *recv_buffer)
+{
+    struct icmphdr *icmp_hdr;
+    struct iphdr *ip_hdr;
+
+    ip_hdr = (struct iphdr *)recv_buffer;
+    icmp_hdr = (struct icmphdr *)(recv_buffer + (ip_hdr->ihl << 2));
+    if (icmp_hdr->type == ICMP_TIME_EXCEEDED)
+    {
+        struct iphdr *inner_ip = (struct iphdr *)((void *)(icmp_hdr + 1));
+        struct icmphdr *inner_icmp = (struct icmphdr*)((void *)inner_ip + (inner_ip->ihl << 2));
+        if(inner_icmp->un.echo.id == htons(getpid()))
+            print_trace_info(ip_hdr, inner_icmp);
+
+    }
+    else if (icmp_hdr->type == ICMP_ECHOREPLY)
+    {
+        if(icmp_hdr->un.echo.id == htons(getpid()))
+            print_trace_info(ip_hdr, icmp_hdr);
+    }
+    else
+        printf("* ");
+}
+void recv_probe(void)
+{
+    static char                 recv_buffer[IP_MAXPACKET];
+    t_msg_data                  re_msg;
+
+    re_msg = create_message_header( recv_buffer,
+                                    sizeof(recv_buffer),
+                                    NULL, 0 );
+    if (recvmsg(g_traceroute.sockfd, &re_msg.msg_hdr, 0) > 0)
+    {
+        g_traceroute.send_infos.r_time = get_timeval();
+        parse_packet(recv_buffer);
+    }
+    else
+        printf("* ");
 }

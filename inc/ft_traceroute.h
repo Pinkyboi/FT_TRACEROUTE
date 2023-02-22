@@ -17,7 +17,6 @@
 #include <stdarg.h>
 #include <math.h>
 #include <unistd.h>
-#include <linux/errqueue.h>
 
 
 #define MAX_C_BUFF_LEN 10240
@@ -25,8 +24,8 @@
 #define IP_HDR_SIZE 20
 #define MAX_DATA_LEN IP_MAXPACKET - IP_HDR_SIZE - ICMP_MINLEN
 
-#define DEFAULT_PACKETLEN 40
-#define DEFAULT_MAX_HOP 64
+#define DEFAULT_PACKETLEN 60
+#define DEFAULT_MAX_HOP 30
 #define DEFAULT_WAIT_TIME 3
 #define DEFAULT_MAX_PROB_SENT 3
 
@@ -34,7 +33,7 @@
 #define ERR_RANGE_ARG_MSG   "invalid argument: '%s': out of range: %ld <= value <= %ld"
 #define PROGNAME "ft_tracerout" 
 
-#define PACKET_SIZE ICMP_MINLEN + g_traceroute.probe_info.packet_len
+#define PACKET_SIZE g_traceroute.specs.packet_len
 
 #define ERR_INVALID_WAIT "ridiculous waiting time `%d'"
 #define ERR_INVALID_MAX_TTL "invalid hop value `%d'"
@@ -80,19 +79,21 @@ typedef struct                  s_dest_info
 
 typedef struct                  s_resolved_addr
 {
+    u_int32_t                   byte_addr;
     char                        full_addr[MAX_ADDR_LEN];
     char                        num_addr[INET_ADDRSTRLEN];
 }                               t_resolved_addr;
 
 typedef struct                  s_probe_info
 {
-    struct timeval              wait_time;
+    struct timeval              timeout;
     uint8_t                     min_ttl;
     uint8_t                     max_ttl;
+    uint8_t                     max_prob_sent;
     uint16_t                    packet_len;
-    uint32_t                    max_prob_sent;
     bool                        resolve_addr;
     bool                        timestamp;
+    bool                        holderr;
 }                               t_probe_info;
 
 typedef struct                  s_send_infos
@@ -100,13 +101,17 @@ typedef struct                  s_send_infos
     uint32_t                    packet_sent;
     uint32_t                    packet_recv;
     uint32_t                    current_seq;
+    struct timeval              s_time;
+    struct timeval              r_time;
+    bool                        reached;
 }                               t_send_infos;
 
 typedef struct                  s_tracerout
 {
     t_dest_info                 dest;
     t_resolved_addr             last_resolved_addr;
-    t_probe_info                probe_info;  
+    t_resolved_addr             resolved_dest;
+    t_probe_info                specs;
     t_send_infos                send_infos;  
     int                         sockfd;
 }                               t_traceroute;
@@ -114,14 +119,14 @@ typedef struct                  s_tracerout
 extern t_traceroute              g_traceroute;
 
 
+void            get_traceroute_opt(int argc, char **argv);
 void            error(uint8_t code, int err, char *err_format, ...);
 
-void            resolve_ipv4_addr(struct in_addr byte_address);
 void            get_dest_addr(char *host_name);
+t_resolved_addr resolve_ipv4_addr(struct in_addr byte_address);
 
-void            get_traceroute_opt(int argc, char **argv);
-
-
+void           send_probe(void);
+void           recv_probe(void);
 
 //time functions
 struct timeval  secs_to_timeval(double secs);
