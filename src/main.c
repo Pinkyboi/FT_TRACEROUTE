@@ -49,6 +49,7 @@ void traceroute_routine()
         print_ttl_value();
         for (uint8_t i = 0; i < g_traceroute.specs.max_prob_sent; i++)
         {
+            fflush(stdout);
             send_probe();
             recv_probe();
         }
