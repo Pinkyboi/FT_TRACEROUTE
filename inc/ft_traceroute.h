@@ -140,4 +140,6 @@ uint16_t        my_ntohs(int16_t nshort);
 uint16_t        my_htons(int16_t nshort);
 uint16_t        in_cksum(uint16_t *buff, uint16_t size);
 
+void            print_traceroute_hdr(void);
+void            print_ttl_value(void);
 #endif

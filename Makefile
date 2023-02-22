@@ -22,7 +22,8 @@ SRC_FILES = main.c\
 			address.c\
 			send.c\
 			recv.c\
-			ntools.c
+			ntools.c\
+			print.c
 
 OBJ_FILES = $(SRC_FILES:.c=.o)
 HDR = $(addprefix $(INC_PATH)/,$(HDR_FILES))

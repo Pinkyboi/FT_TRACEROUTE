@@ -26,32 +26,20 @@ void setup_ttl(void)
         error(2, errno, "Internal error");
 }
 
-void print_traceroute_hdr()
-{
-    printf("traceroute to %s (%s), %d hops max, %d byte packets\n",
-        g_traceroute.dest.name,
-        g_traceroute.resolved_dest.num_addr,
-        g_traceroute.specs.max_ttl,
-        g_traceroute.specs.packet_len);
-}
 
-void print_ttl_value()
-{
-    printf("%s%d  ", ((g_traceroute.specs.min_ttl > 9) ? "" : " "), g_traceroute.specs.min_ttl);
-}
 
 void traceroute_routine()
 {
     print_traceroute_hdr();
-    while (g_traceroute.specs.min_ttl < g_traceroute.specs.max_ttl)
+    while (g_traceroute.specs.min_ttl <= g_traceroute.specs.max_ttl)
     {
         setup_ttl();
         print_ttl_value();
         for (uint8_t i = 0; i < g_traceroute.specs.max_prob_sent; i++)
         {
-            fflush(stdout);
             send_probe();
             recv_probe();
+            fflush(stdout);
         }
         printf("\n");
         if (g_traceroute.last_resolved_addr.byte_addr == g_traceroute.dest.bytes_addr.s_addr)

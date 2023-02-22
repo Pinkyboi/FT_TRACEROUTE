@@ -8,8 +8,8 @@ static void fill_icmp_packet(char *packet_buffer, uint16_t packet_len)
     icmp_hdr = (struct icmphdr *)packet_buffer;
     ft_bzero(icmp_hdr, sizeof(icmp_hdr));
     icmp_hdr->type = ICMP_ECHO;
-    icmp_hdr->un.echo.sequence = htons(g_traceroute.send_infos.current_seq);
-    icmp_hdr->un.echo.id = htons((uint16_t)getpid());
+    icmp_hdr->un.echo.sequence = my_htons(g_traceroute.send_infos.current_seq);
+    icmp_hdr->un.echo.id = my_htons((uint16_t)getpid());
     icmp_hdr->checksum = in_cksum((uint16_t *)packet_buffer, packet_len);
 }
 

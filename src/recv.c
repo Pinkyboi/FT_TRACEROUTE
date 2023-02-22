@@ -17,7 +17,7 @@ static t_msg_data create_message_header(void* message_buffer, int message_len,
     return msg;
 }
 
-void print_trace_info(struct iphdr *ip_hdr, struct icmphdr *icmp_hdr)
+static void print_trace_info(struct iphdr *ip_hdr, struct icmphdr *icmp_hdr)
 {
     if (ip_hdr->saddr != g_traceroute.last_resolved_addr.byte_addr)
     {
@@ -32,7 +32,7 @@ void print_trace_info(struct iphdr *ip_hdr, struct icmphdr *icmp_hdr)
                                         g_traceroute.send_infos.r_time ));
 }
 
-void parse_packet(char *recv_buffer)
+static void parse_packet(char *recv_buffer)
 {
     struct icmphdr *icmp_hdr;
     struct iphdr *ip_hdr;
@@ -43,13 +43,13 @@ void parse_packet(char *recv_buffer)
     {
         struct iphdr *inner_ip = (struct iphdr *)((void *)(icmp_hdr + 1));
         struct icmphdr *inner_icmp = (struct icmphdr*)((void *)inner_ip + (inner_ip->ihl << 2));
-        if(inner_icmp->un.echo.id == htons(getpid()))
+        if(inner_icmp->un.echo.id == my_htons(getpid()))
             print_trace_info(ip_hdr, inner_icmp);
 
     }
     else if (icmp_hdr->type == ICMP_ECHOREPLY)
     {
-        if(icmp_hdr->un.echo.id == htons(getpid()))
+        if(icmp_hdr->un.echo.id == my_htons(getpid()))
             print_trace_info(ip_hdr, icmp_hdr);
     }
     else
