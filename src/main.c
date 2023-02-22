@@ -82,8 +82,6 @@ int main(int argc, char **argv)
     get_traceroute_opt(argc, argv);
     get_dest_addr(g_traceroute.dest.name);
     g_traceroute.resolved_dest = resolve_ipv4_addr(g_traceroute.dest.bytes_addr);
-    if (!strcmp(g_traceroute.dest.name, g_traceroute.resolved_dest.num_addr))
-        g_traceroute.specs.resolve_addr = false;
     setup_socket();
     traceroute_routine();
 }
