@@ -40,18 +40,18 @@ void get_dest_addr(char *host_name)
         error(2, 0, "%s : %s", host_name, gai_strerror(status));
     for (result_ptr = server_result; result_ptr != NULL; result_ptr = result_ptr->ai_next)
     {
-        if (result_ptr->ai_family == AF_INET &&
+        if ( result_ptr->ai_family == AF_INET &&
                 result_ptr->ai_protocol == IPPROTO_ICMP && 
                 result_ptr->ai_socktype == SOCK_RAW &&
                 result_ptr->ai_addrlen == sizeof(struct sockaddr_in) &&
-                result_ptr->ai_addr != NULL)
+                result_ptr->ai_addr != NULL )
             break;
     }
     if (result_ptr)
     {
-        g_traceroute.dest.addr_info   = *result_ptr;
-        g_traceroute.dest.sock_addr   = *result_ptr->ai_addr;
-        g_traceroute.dest.bytes_addr  = ((struct sockaddr_in *)result_ptr->ai_addr)->sin_addr;
+        g_traceroute.dest.addr_info  = *result_ptr;
+        g_traceroute.dest.sock_addr  = *result_ptr->ai_addr;
+        g_traceroute.dest.bytes_addr = ((struct sockaddr_in *)result_ptr->ai_addr)->sin_addr;
     }
     freeaddrinfo(server_result);
 }

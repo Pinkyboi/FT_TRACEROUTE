@@ -55,6 +55,7 @@ static void parse_packet(char *recv_buffer)
     else
         printf("* ");
 }
+
 void recv_probe(void)
 {
     static char                 recv_buffer[IP_MAXPACKET];
@@ -63,7 +64,7 @@ void recv_probe(void)
     re_msg = create_message_header( recv_buffer,
                                     sizeof(recv_buffer),
                                     NULL, 0 );
-    if (recvmsg(g_traceroute.sockfd, &re_msg.msg_hdr, 0) > 0)
+    if (recvmsg(g_traceroute.sockfd, &re_msg.msg_hdr, MSG_WAITALL) > 0)
     {
         g_traceroute.send_infos.r_time = get_timeval();
         parse_packet(recv_buffer);
