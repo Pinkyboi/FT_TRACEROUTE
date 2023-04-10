@@ -34,7 +34,6 @@
 #define ERR_RANGE_ARG_MSG   "invalid argument: '%s': out of range: %ld <= value <= %ld"
 #define PROGNAME "ft_tracerout" 
 
-#define PACKET_SIZE g_traceroute.specs.packet_len
 
 #define ERR_INVALID_WAIT "ridiculous waiting time `%d'"
 #define ERR_INVALID_MAX_TTL "invalid max hop value `%d'"
@@ -51,7 +50,18 @@
 #define MIN_WAIT_TIME 1
 #define MAX_WAIT_TIME 60
 
+#define PRINT_LR()              write(1, "\n", 1)
+#define GET_RTT()               usec_time_diff(g_traceroute.prob_time.s_time, g_traceroute.prob_time.r_time)
+#define PRINT_TTL()             ft_putnbr(g_traceroute.specs.min_ttl) 
 
+#define LAST_ADDRESS            g_traceroute.last_resolved_addr.num_addr
+#define LAST_DOMAIN_NAME        g_traceroute.last_resolved_addr.full_addr
+#define TARGET_ADDRESS          g_traceroute.resolved_dest.num_addr
+#define TARGET_DOMAIN_NAME      g_traceroute.resolved_dest.full_addr
+
+#define SOCKET_FD               g_traceroute.sockfd
+#define TIMEOUT                 g_traceroute.specs.timeout
+#define PACKET_SIZE             g_traceroute.specs.packet_len
 
 typedef enum bool{
 
@@ -59,18 +69,6 @@ typedef enum bool{
     true
 
 }       bool;
-
-typedef struct                  s_msg_data
-{
-    struct msghdr               msg_hdr;
-    struct iovec                msg_iov;
-}                               t_msg_data;
-
-typedef struct                  s_cmsg_info
-{
-    struct sock_extended_err    *error_ptr;
-    struct cmsghdr              *cmsg;
-}                               t_cmsg_info;
 
 typedef struct                  s_dest_info
 {
@@ -95,19 +93,13 @@ typedef struct                  s_probe_info
     uint8_t                     max_prob_sent;
     uint16_t                    packet_len;
     bool                        resolve_addr;
-    bool                        timestamp;
-    bool                        holderr;
 }                               t_probe_info;
 
-typedef struct                  s_send_infos
+typedef struct                  s_prob_timer
 {
-    uint32_t                    packet_sent;
-    uint32_t                    packet_recv;
-    uint32_t                    current_seq;
     struct timeval              s_time;
     struct timeval              r_time;
-    bool                        reached;
-}                               t_send_infos;
+}                               t_prob_timer;
 
 typedef struct                  s_tracerout
 {
@@ -115,7 +107,7 @@ typedef struct                  s_tracerout
     t_resolved_addr             last_resolved_addr;
     t_resolved_addr             resolved_dest;
     t_probe_info                specs;
-    t_send_infos                send_infos;  
+    t_prob_timer                prob_time;
     int                         sockfd;
 }                               t_traceroute;
 
@@ -128,8 +120,8 @@ void            error(uint8_t code, int err, char *err_format, ...);
 void            get_dest_addr(char *host_name);
 t_resolved_addr resolve_ipv4_addr(struct in_addr byte_address);
 
-void           send_probe(void);
-void           recv_probe(void);
+void           send_probe(uint8_t prob_number);
+void           recv_probe(uint8_t prob_number);
 
 //time functions
 struct timeval  secs_to_timeval(double secs);
