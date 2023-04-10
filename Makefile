@@ -3,8 +3,7 @@ NAME = ft_traceroute
 
 CC = gcc
 
-CFLAGS =
-# CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra
 
 SRC_PATH = ./src
 OBJ_PATH = ./obj
@@ -23,7 +22,6 @@ SRC_FILES = main.c\
 			send.c\
 			recv.c\
 			ntools.c\
-			print.c
 
 OBJ_FILES = $(SRC_FILES:.c=.o)
 HDR = $(addprefix $(INC_PATH)/,$(HDR_FILES))
@@ -37,7 +35,6 @@ INC = -I$(INC_PATH) -I$(LIBFT_INC)
 .PHONY: all clean fclean re
 
 all : libft_all $(NAME)
-
 
 libft_all :
 	@make -C $(LIBFT_PATH)

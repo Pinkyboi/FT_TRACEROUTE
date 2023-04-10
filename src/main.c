@@ -6,7 +6,7 @@ t_traceroute g_traceroute = {
         .min_ttl = MIN_TTL,
         .max_ttl = DEFAULT_MAX_HOP,
         .packet_len = DEFAULT_PACKETLEN,
-        .timeout = DEFAULT_WAIT_TIME,
+        .timeout = {.tv_sec = DEFAULT_WAIT_TIME},
         .max_prob_sent = DEFAULT_MAX_PROB_SENT,
         .resolve_addr = true,
     }
@@ -20,14 +20,14 @@ void setup_ttl(void)
     socketfail = setsockopt( g_traceroute.sockfd,
                             IPPROTO_IP, IP_TTL,
                             (void *)&g_traceroute.specs.min_ttl,
-                            sizeof(g_traceroute.specs.min_ttl) );
+                            sizeof(g_traceroute.specs.min_ttl));
     if (socketfail)
         error(2, errno, "Internal error");
 }
 
 void print_traceroute_hdr()
 {
-    printf("traceroute to %s (%s), %lld hops max, %lld byte packets\n",
+    printf("traceroute to %s (%s), %d hops max, %d byte packets\n",
         TARGET_DOMAIN_NAME,
         TARGET_ADDRESS,
         g_traceroute.specs.max_ttl,
@@ -52,8 +52,6 @@ void traceroute_routine()
 
 void setup_socket(void)
 {
-    bool socketfail;
-
     g_traceroute.sockfd = socket( g_traceroute.dest.addr_info.ai_family,
                                 SOCK_RAW,
                                 IPPROTO_ICMP );

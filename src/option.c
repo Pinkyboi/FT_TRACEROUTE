@@ -63,7 +63,9 @@ void get_traceroute_opt(int argc, char **argv)
         }
     }
     if (g_traceroute.specs.max_ttl < g_traceroute.specs.min_ttl)
+    {
         error(2, 0, ERR_INVALID_MIN_MAX_TTL, g_traceroute.specs.min_ttl, g_traceroute.specs.max_ttl);
+    }
 	argc -= optind;
 	argv += optind;
     if (!argc)
