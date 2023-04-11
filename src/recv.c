@@ -26,6 +26,8 @@ bool is_packet_mine(char *recv_buffer, uint16_t packet_size)
     icmp_hdr = (struct icmphdr *)(recv_buffer + (ip_hdr->ihl << 2));
     if (icmp_hdr->type == ICMP_TIME_EXCEEDED)
     {
+        if (packet_size < 2 * (sizeof(struct iphdr) + sizeof(struct icmphdr)))
+            return false;
         inner_ip_hdr = (struct iphdr*)((void *)icmp_hdr + sizeof(struct icmphdr));
         inner_icmp_hdr = (struct icmphdr*)((void *)inner_ip_hdr + (inner_ip_hdr->ihl << 2));
         if (inner_icmp_hdr->type == ICMP_ECHO && inner_icmp_hdr->un.echo.id == my_htons(getpid()))
