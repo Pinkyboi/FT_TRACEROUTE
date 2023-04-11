@@ -19,7 +19,6 @@
 #include <unistd.h>
 
 
-#define MAX_C_BUFF_LEN 10240
 #define MAX_ADDR_LEN 255
 #define IP_HDR_SIZE 20
 #define MAX_DATA_LEN IP_MAXPACKET - IP_HDR_SIZE - ICMP_MINLEN
@@ -31,15 +30,13 @@
 #define DEFAULT_MAX_PROB_SENT 3
 
 
-#define ERR_RANGE_ARG_MSG   "invalid argument: '%s': out of range: %ld <= value <= %ld"
-#define PROGNAME "ft_tracerout" 
-
-
-#define ERR_INVALID_WAIT "ridiculous waiting time `%d'"
-#define ERR_INVALID_MAX_TTL "invalid max hop value `%d'"
-#define ERR_INVALID_MIN_TTL "invalid min hop value `%d'"
+#define ERR_RANGE_ARG_MSG       "invalid argument: '%s': out of range: %ld <= value <= %ld"
+#define PROGNAME                "ft_tracerout"
+#define ERR_INVALID_WAIT        "ridiculous waiting time `%d'"
+#define ERR_INVALID_MAX_TTL     "invalid max hop value `%d'"
+#define ERR_INVALID_MIN_TTL     "invalid min hop value `%d'"
 #define ERR_INVALID_MIN_MAX_TTL "invalid min hop value `%d' greater than max hop value `%d'"
-#define ERR_INVALID_MAX_PROB "number of tries should be between %d and %d'"
+#define ERR_INVALID_MAX_PROB    "number of tries should be between %d and %d'"
 
 #define MIN_PROBE_NBR 1
 #define MAX_PROBE_NBR 10
@@ -51,7 +48,7 @@
 #define MAX_WAIT_TIME 60
 
 #define PRINT_LR()              printf("\n")
-#define PRINT_TIMEOUT()         printf(" *")
+#define PRINT_TIMEOUT()         printf("  *")
 #define GET_RTT()               usec_time_diff(g_traceroute.prob_time.s_time, g_traceroute.prob_time.r_time)
 #define PRINT_TTL()             ft_putnbr(g_traceroute.specs.min_ttl) 
 
