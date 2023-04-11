@@ -39,6 +39,7 @@ void recv_probe(uint8_t prob_number)
 {
     static char         recv_buffer[IP_MAXPACKET];
     struct sockaddr     sender_addr;
+    struct timeval      current_timeout;
     socklen_t           addrlen;
     fd_set              rfds;
     
@@ -47,8 +48,8 @@ void recv_probe(uint8_t prob_number)
     {
         FD_ZERO(&rfds);
         FD_SET(SOCKET_FD, &rfds);
-        TIMEOUT = (struct timeval){.tv_sec = DEFAULT_WAIT_TIME};
-        if (select(SOCKET_FD + 1, &rfds, NULL, NULL, &TIMEOUT))
+        current_timeout = TIMEOUT;
+        if (select(SOCKET_FD + 1, &rfds, NULL, NULL, &current_timeout))
         {
             if (recvfrom(g_traceroute.sockfd, recv_buffer, IP_MAXPACKET, 0, &sender_addr, &addrlen) > 0)
             {
