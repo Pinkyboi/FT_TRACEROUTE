@@ -48,7 +48,7 @@
 #define MAX_WAIT_TIME 60
 
 #define PRINT_LR()              printf("\n")
-#define PRINT_TIMEOUT()         printf("  *")
+#define PRINT_TIMEOUT()         ft_putstr("  *")
 #define GET_RTT()               usec_time_diff(g_traceroute.prob_time.s_time, g_traceroute.prob_time.r_time)
 #define PRINT_TTL()             ft_putnbr(g_traceroute.specs.min_ttl) 
 
