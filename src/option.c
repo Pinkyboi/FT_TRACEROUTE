@@ -4,7 +4,7 @@ static void tracerout_usage(void)
 {
     printf("Usage: ft_traceroute [OPTION...] HOST [PACKET_LEN]\n");
     printf("Print the route packets trace to network host.\n\n");
-    printf(" -n, \tdon't resolve hostnames\n");
+    printf(" -n, \tresolve hostnames\n");
     printf(" -m, \tset maximal hop count (default: %d)\n", DEFAULT_MAX_HOP);
     printf(" -M, \tset minimal hop count (default: %d)\n", DEFAULT_MIN_HOP);
     printf(" -q, \tsend NUM probe packets per hop (default: %d)\n", DEFAULT_MAX_PROB_SENT);
@@ -31,7 +31,7 @@ void get_traceroute_opt(int argc, char **argv)
         switch (opt)
         {
             case 'n':
-                g_traceroute.specs.resolve_addr = false;
+                g_traceroute.specs.resolve_addr = true;
                 break;
             case 'm':
                 max_hop = ft_atoi(optarg);

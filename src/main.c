@@ -8,7 +8,7 @@ t_traceroute g_traceroute = {
         .packet_len = DEFAULT_PACKETLEN,
         .timeout = {.tv_sec = DEFAULT_WAIT_TIME},
         .max_prob_sent = DEFAULT_MAX_PROB_SENT,
-        .resolve_addr = true,
+        .resolve_addr = false,
     }
 
 };
@@ -28,7 +28,7 @@ void setup_ttl(void)
 void print_traceroute_hdr()
 {
     printf("traceroute to %s (%s), %d hops max, %d byte packets\n",
-        TARGET_DOMAIN_NAME,
+        g_traceroute.dest.name,
         TARGET_ADDRESS,
         g_traceroute.specs.max_ttl,
         PACKET_SIZE);
